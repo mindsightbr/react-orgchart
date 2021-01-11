@@ -111,6 +111,11 @@ var ChartNode = function ChartNode(_ref) {
       selected = _useState14[0],
       setSelected = _useState14[1];
 
+  var _useState15 = (0, _react.useState)(false),
+      _useState16 = _slicedToArray(_useState15, 2),
+      alreadyExpanded = _useState16[0],
+      setAlreadyExpanded = _useState16[1];
+
   var nodeClass = ["oc-node", isChildrenCollapsed ? "isChildrenCollapsed" : "", allowedDrop ? "allowedDrop" : "", selected ? "selected" : ""].filter(function (item) {
     return item;
   }).join(" ");
@@ -220,7 +225,7 @@ var ChartNode = function ChartNode(_ref) {
               e.stopPropagation();
 
               if (!(loadData && !!!datasource.children)) {
-                _context.next = 8;
+                _context.next = 9;
                 break;
               }
 
@@ -230,14 +235,15 @@ var ChartNode = function ChartNode(_ref) {
             case 4:
               children = _context.sent;
               addChildrenHandler(children);
-              _context.next = 10;
+              setAlreadyExpanded(true);
+              _context.next = 11;
               break;
 
-            case 8:
+            case 9:
               setIsChildrenCollapsed(!isChildrenCollapsed);
               setBottomEdgeExpanded(!bottomEdgeExpanded);
 
-            case 10:
+            case 11:
             case "end":
               return _context.stop();
           }
@@ -340,6 +346,14 @@ var ChartNode = function ChartNode(_ref) {
     setBottomEdgeExpanded(!collapse);
   };
 
+  var getBottomEdgeClass = function getBottomEdgeClass() {
+    if (!loadData && collapsible && datasource.relationship && datasource.relationship.charAt(2) === "1") {
+      return bottomEdgeExpanded ? "oci-chevron-up" : "oci-chevron-down";
+    } else {
+      return bottomEdgeExpanded !== undefined && !alreadyExpanded && isChildrenCollapsed ? bottomEdgeExpanded ? "oci-chevron-up" : "oci-chevron-down" : "";
+    }
+  };
+
   return _react.default.createElement("li", {
     className: "oc-hierarchy"
   }, _react.default.createElement("div", {
@@ -373,8 +387,8 @@ var ChartNode = function ChartNode(_ref) {
   }), _react.default.createElement("i", {
     className: "oc-edge horizontalEdge leftEdge oci\n                 ".concat(leftEdgeExpanded === undefined ? "" : leftEdgeExpanded ? "oci-chevron-right" : "oci-chevron-left"),
     onClick: hEdgeClickHandler
-  })), collapsible && datasource.relationship && datasource.relationship.charAt(2) === "1" && _react.default.createElement("i", {
-    className: "oc-edge verticalEdge bottomEdge oci\n               ".concat(bottomEdgeExpanded === undefined ? "" : bottomEdgeExpanded ? "oci-chevron-up" : "oci-chevron-down"),
+  })), _react.default.createElement("i", {
+    className: "oc-edge verticalEdge bottomEdge oci\n               ".concat(getBottomEdgeClass()),
     onClick: bottomEdgeClickHandler
   })), datasource.children && datasource.children.length > 0 && _react.default.createElement("ul", {
     className: isChildrenCollapsed ? "hidden" : ""
