@@ -40,6 +40,7 @@ const ChartNode = ({
   const [leftEdgeExpanded, setLeftEdgeExpanded] = useState();
   const [allowedDrop, setAllowedDrop] = useState(false);
   const [selected, setSelected] = useState(false);
+  const [alreadyExpanded, setAlreadyExpanded] = useState(false);
 
   const nodeClass = [
     "oc-node",
@@ -103,6 +104,7 @@ const ChartNode = ({
     setRightEdgeExpanded(!isSiblingsCollapsed);
     setLeftEdgeExpanded(!isSiblingsCollapsed);
     setBottomEdgeExpanded(!isChildrenCollapsed);
+
   };
 
   const removeArrows = () => {
@@ -162,6 +164,7 @@ const ChartNode = ({
     if (loadData && !!!datasource.children) {
       const children = await loadData(datasource);
       addChildrenHandler(children);
+      setAlreadyExpanded(true);
     } else {
       setIsChildrenCollapsed(!isChildrenCollapsed);
       setBottomEdgeExpanded(!bottomEdgeExpanded);
@@ -254,6 +257,23 @@ const ChartNode = ({
     setBottomEdgeExpanded(!collapse);
   };
 
+  const getBottomEdgeClass = () => {
+    if(!loadData && collapsible &&
+          datasource.relationship &&
+          datasource.relationship.charAt(2) === "1"){
+      return  bottomEdgeExpanded
+                    ? "oci-chevron-up"
+                    : "oci-chevron-down"
+    }
+    else {
+      return  (bottomEdgeExpanded !== undefined) && !alreadyExpanded && isChildrenCollapsed ?
+        bottomEdgeExpanded
+          ? "oci-chevron-up"
+          : "oci-chevron-down" :
+        ""
+    }
+  };
+
   return (
     <li className="oc-hierarchy">
       <div
@@ -326,17 +346,10 @@ const ChartNode = ({
               />
             </>
           )}
-        {collapsible &&
-          datasource.relationship &&
-          datasource.relationship.charAt(2) === "1" && (
+        {(
             <i
               className={`oc-edge verticalEdge bottomEdge oci
-               ${bottomEdgeExpanded === undefined
-                  ? ""
-                  : bottomEdgeExpanded
-                    ? "oci-chevron-up"
-                    : "oci-chevron-down"
-                }`}
+               ${getBottomEdgeClass()}`}
               onClick={bottomEdgeClickHandler}
             />
           )}
